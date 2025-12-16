@@ -78,6 +78,7 @@ class NotificationFragment : Fragment() {
                                 time = timestamp, // Dù timestamp là số hay chữ đều hiển thị được
                                 title = title,
                                 image = imageUrl,
+                                type = type // Thêm type để adapter đổi màu
                             )
                         )
                     } catch (e: Exception) {

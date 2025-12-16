@@ -2,21 +2,21 @@
 
 Ứng dụng Android IoT giám sát và cảnh báo ngã dành cho người cao tuổi.
 
-## 🚀 Chức năng chính
-- ✅ Đăng nhập/Đăng ký với Firebase Authentication
-- ✅ Giám sát real-time phát hiện người ngã
-- ✅ Hiển thị hình ảnh từ camera IoT
-- ✅ Thông báo push khi phát hiện ngã
-- ✅ Button gọi điện khẩn cấp
-- ✅ Lịch sử các sự kiện
+## Chức năng chính
+- Đăng nhập/Đăng ký với Firebase Authentication
+- Giám sát real-time phát hiện người ngã
+- Hiển thị hình ảnh từ camera IoT
+- Thông báo push khi phát hiện ngã
+- Button gọi điện khẩn cấp
+- Lịch sử các sự kiện
 
-## 📋 Yêu cầu
+## Yêu cầu
 - Android Studio Hedgehog hoặc mới hơn
 - Android SDK 24+
 - Firebase project đã setup
 - Kotlin 1.9+
 
-## 🔧 Cài đặt
+## Cài đặt
 
 ### 1. Clone repository
 ```bash
@@ -25,7 +25,6 @@ cd ProjectIot
 ```
 
 ### 2. Cấu hình Firebase
-**⚠️ QUAN TRỌNG:** File `google-services.json` chứa API keys và KHÔNG được commit lên Git.
 
 Xem hướng dẫn chi tiết tại: [SETUP_FIREBASE.md](SETUP_FIREBASE.md)
 
@@ -46,7 +45,7 @@ gradlew build
 ### 4. Run app
 Chọn device hoặc emulator và click Run trong Android Studio.
 
-## 🏗️ Cấu trúc dự án
+## Cấu trúc dự án
 ```
 app/src/main/java/com/danh/myapplication/
 ├── MainActivity.kt          # Activity chính
@@ -60,11 +59,6 @@ app/src/main/java/com/danh/myapplication/
 └── NotificationAdapter.kt  # Adapter RecyclerView
 ```
 
-## 🔐 Bảo mật
-- ✅ File `google-services.json` đã được thêm vào `.gitignore`
-- ✅ Sử dụng Firebase Authentication
-- ✅ API keys không hardcode trong source code
-
 ## 📱 Firebase Structure
 ```json
 data1/
@@ -76,11 +70,11 @@ data1/
       └── ...
 ```
 
-## 👥 Team
+## Team
 Đảm bảo mọi thành viên team đều:
 1. Có quyền truy cập Firebase Console
 2. Đã download file `google-services.json`
 3. Đặt file vào `app/` trước khi build
 
-## 📄 License
+## License
 [Your License Here]

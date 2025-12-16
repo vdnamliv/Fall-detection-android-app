@@ -55,6 +55,19 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        
+        // Đọc số điện thoại từ SharedPreferences
+        val prefs = requireContext().getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        val emergencyPhone = prefs.getString("emergency_phone", EMERGENCY_PHONE) ?: EMERGENCY_PHONE
+        
+        // Setup nút SOS
+        binding.btnSos.setOnClickListener {
+            val callIntent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$emergencyPhone")
+            }
+            startActivity(callIntent)
+        }
+        
         listenLatestEvent()
         return binding.root
     }
@@ -84,10 +97,18 @@ class HomeFragment : Fragment() {
                         Log.d("FIREBASE_DATA", "Type: $type")
 
                         // 4. Cập nhật giao diện
-                        val text = if (type == "fall") "CẢNH BÁO: CÓ NGƯỜI NGÃ!"
-                        else "TRẠNG THÁI: ${type.uppercase()}"
-
-                        binding.textView.text = text
+                        val isFall = type == "fall"
+                        
+                        // Cập nhật CardView status
+                        if (isFall) {
+                            binding.cardStatus.setCardBackgroundColor(android.graphics.Color.parseColor("#D32F2F"))
+                            binding.textView.text = "⚠️ PHÁT HIỆN NGÃ!"
+                            binding.tvStatusDesc.text = "Cần kiểm tra ngay"
+                        } else {
+                            binding.cardStatus.setCardBackgroundColor(android.graphics.Color.parseColor("#4CAF50"))
+                            binding.textView.text = "HỆ THỐNG AN TOÀN"
+                            binding.tvStatusDesc.text = "Không có sự cố"
+                        }
 
                         // 5. Xử lý ảnh (Decode Base64)
                         if (imageUrl.isNotEmpty()) {
@@ -161,8 +182,12 @@ class HomeFragment : Fragment() {
 
         // Chỉ hiện nút gọi điện khi bị ngã
         if (isFall) {
+            // Đọc số điện thoại từ SharedPreferences
+            val prefs = ctx.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+            val emergencyPhone = prefs.getString("emergency_phone", EMERGENCY_PHONE) ?: EMERGENCY_PHONE
+            
             val callIntent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$EMERGENCY_PHONE")
+                data = Uri.parse("tel:$emergencyPhone")
             }
 
             val callPendingIntent = PendingIntent.getActivity(

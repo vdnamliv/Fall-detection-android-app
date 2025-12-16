@@ -1,18 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".SettingFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        tools:listitem="@layout/item_notifation"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Header -->
+        <TextView
+            style="@style/TextAppearance.AppCompat.Display1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cài đặt"
+            android:textColor="#212121"
+            android:textStyle="bold" />
+
+        <!-- Card Số điện thoại khẩn cấp -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📞 Số điện thoại khẩn cấp"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Nhập số điện thoại"
+                    app:boxStrokeColor="#1976D2"
+                    app:hintTextColor="#1976D2">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_emergency_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_save_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="#1976D2"
+                    android:text="Lưu số điện thoại"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card Thông tin người dùng -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="👤 Thông tin người được giám sát"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Tên người được giám sát"
+                    app:boxStrokeColor="#1976D2"
+                    app:hintTextColor="#1976D2">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_user_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Địa chỉ thiết bị"
+                    app:boxStrokeColor="#1976D2"
+                    app:hintTextColor="#1976D2">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress"
+                        android:maxLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_save_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="#1976D2"
+                    android:text="Lưu thông tin"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card Độ nhạy cảm biến -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎚️ Độ nhạy cảm biến"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_sensitivity_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Độ nhạy: 50%"
+                    android:textColor="#757575"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_sensitivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:max="100"
+                    android:progress="50" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Thấp ← → Cao"
+                    android:textAlignment="center"
+                    android:textColor="#9E9E9E"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card Test hệ thống -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🧪 Kiểm tra hệ thống"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Gửi thông báo test để kiểm tra hệ thống hoạt động"
+                    android:textColor="#757575"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btn_test_system"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="#FF9800"
+                    android:text="Test thông báo"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>
