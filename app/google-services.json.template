@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "240199776708",
-    "project_id": "iotproject-c4618",
-    "storage_bucket": "iotproject-c4618.firebasestorage.app"
+    "project_number": "YOUR_PROJECT_NUMBER",
+    "project_id": "YOUR_PROJECT_ID",
+    "storage_bucket": "YOUR_STORAGE_BUCKET"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:240199776708:android:174de619e78c5ad3dccc91",
+        "mobilesdk_app_id": "YOUR_MOBILE_SDK_APP_ID",
         "android_client_info": {
           "package_name": "com.danh.myapplication"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCyJ78c88iVSbcMayYrIl_P5j9_zqk8mEI"
+          "current_key": "YOUR_FIREBASE_API_KEY"
         }
       ],
       "services": {

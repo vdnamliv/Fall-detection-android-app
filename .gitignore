@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Firebase config files with sensitive data
+app/google-services.json
+google-services.json
