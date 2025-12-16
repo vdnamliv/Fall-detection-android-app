@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
@@ -40,9 +39,6 @@ class SettingFragment : Fragment() {
         binding.edtEmergencyPhone.setText(prefs.getString("emergency_phone", "0334679392"))
         binding.edtUserName.setText(prefs.getString("user_name", ""))
         binding.edtAddress.setText(prefs.getString("address", ""))
-        val sensitivity = prefs.getInt("sensitivity", 50)
-        binding.seekbarSensitivity.progress = sensitivity
-        binding.tvSensitivityValue.text = "Độ nhạy: $sensitivity%"
 
         // Lưu số điện thoại khẩn cấp
         binding.btnSavePhone.setOnClickListener {
@@ -65,17 +61,6 @@ class SettingFragment : Fragment() {
                 .apply()
             Toast.makeText(requireContext(), "Đã lưu thông tin!", Toast.LENGTH_SHORT).show()
         }
-
-        // SeekBar độ nhạy
-        binding.seekbarSensitivity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                binding.tvSensitivityValue.text = "Độ nhạy: $progress%"
-                prefs.edit().putInt("sensitivity", progress).apply()
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
 
         // Nút Test System
         binding.btnTestSystem.setOnClickListener {

@@ -1,11 +1,17 @@
 package com.danh.myapplication
 
+import android.app.Dialog
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.danh.myapplication.databinding.FragmentNotificationBinding
 import com.google.firebase.database.DataSnapshot
@@ -41,6 +47,11 @@ class NotificationFragment : Fragment() {
         adapter = NotificationAdapter(notifications, object : NotificationAdapter.OnItemClick {
             override fun clickNotification() {
                 // Xử lý sự kiện click nếu cần
+            }
+
+            override fun clickImage(imageBase64: String) {
+                // Hiển thị ảnh full screen
+                showImageDialog(imageBase64)
             }
         })
 
@@ -99,5 +110,29 @@ class NotificationFragment : Fragment() {
                 Log.e("NotificationFragment", "Lỗi tải data: ${error.message}")
             }
         })
+    }
+
+    private fun showImageDialog(imageBase64: String) {
+        val dialog = Dialog(requireContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_image_viewer)
+
+        val imgFull = dialog.findViewById<ImageView>(R.id.img_full)
+        val btnClose = dialog.findViewById<ImageButton>(R.id.btn_close)
+
+        // Decode Base64 và hiển thị ảnh
+        try {
+            val bytes = Base64.decode(imageBase64, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            imgFull.setImageBitmap(bitmap)
+        } catch (e: Exception) {
+            Log.e("ImageDialog", "Lỗi decode ảnh: ${e.message}")
+        }
+
+        // Đóng dialog khi click nút close hoặc click vào ảnh
+        btnClose.setOnClickListener { dialog.dismiss() }
+        imgFull.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
     }
 }

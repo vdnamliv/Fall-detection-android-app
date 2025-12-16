@@ -67,6 +67,10 @@ class NotificationAdapter(private val notifications: MutableList<Notification>,p
                 val bitmap = decodeBase64ToBitmap(notification.image)
                 if (bitmap != null) {
                     binding.imgThumbnail.setImageBitmap(bitmap)
+                    // Click vào ảnh để zoom
+                    binding.imgThumbnail.setOnClickListener {
+                        listener.clickImage(notification.image)
+                    }
                 } else {
                     binding.imgThumbnail.setImageResource(R.drawable.ic_notification)
                 }
@@ -92,5 +96,6 @@ class NotificationAdapter(private val notifications: MutableList<Notification>,p
     }
     interface OnItemClick{
         fun clickNotification()
+        fun clickImage(imageBase64: String) // Callback khi click vào ảnh
     }
 }
