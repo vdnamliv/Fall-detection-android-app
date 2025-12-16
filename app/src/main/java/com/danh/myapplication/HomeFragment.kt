@@ -7,14 +7,19 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import com.danh.myapplication.databinding.FragmentHomeBinding
@@ -23,11 +28,23 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeFragment : Fragment() {
     private lateinit var database: DatabaseReference
     private lateinit var binding: FragmentHomeBinding
     private var firstLoad = true   // Biến để bỏ qua dữ liệu cũ lúc mới mở app
+    private var lastEventTime: Long = 0 // Thời gian của sự kiện cuối cùng
+    
+    // Handler để kiểm tra online/offline định kỳ
+    private val connectionHandler = Handler(Looper.getMainLooper())
+    private val checkConnectionRunnable = object : Runnable {
+        override fun run() {
+            checkConnectionStatus() // Kiểm tra lại trạng thái
+            connectionHandler.postDelayed(this, 10000) // Lặp lại mỗi 10 giây
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +77,8 @@ class HomeFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("app_settings", Context.MODE_PRIVATE)
         val emergencyPhone = prefs.getString("emergency_phone", EMERGENCY_PHONE) ?: EMERGENCY_PHONE
         
-        // Setup nút SOS
-        binding.btnSos.setOnClickListener {
+        // Setup nút SOS (đổi từ btn_sos sang btnEmergencyCall)
+        binding.btnEmergencyCall.setOnClickListener {
             val callIntent = Intent(Intent.ACTION_DIAL).apply {
                 data = Uri.parse("tel:$emergencyPhone")
             }
@@ -70,6 +87,18 @@ class HomeFragment : Fragment() {
         
         listenLatestEvent()
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Bắt đầu vòng lặp kiểm tra kết nối khi mở màn hình
+        connectionHandler.post(checkConnectionRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Dừng kiểm tra khi thoát màn hình để tiết kiệm pin
+        connectionHandler.removeCallbacks(checkConnectionRunnable)
     }
 
     private fun listenLatestEvent() {
@@ -88,44 +117,41 @@ class HomeFragment : Fragment() {
                     }
 
                     try {
-                        // 3. SỬA LỖI QUAN TRỌNG: Lấy dữ liệu thủ công để tránh lỗi Type Mismatch
-                        // Dù server gửi số hay chữ, .toString() đều xử lý được hết
-                        val type = snapshot.child("type").value?.toString() ?: ""
+                        // 3. Lấy dữ liệu từ Firebase
+                        val type = snapshot.child("type").value?.toString() ?: "normal"
                         val imageUrl = snapshot.child("imageUrl").value?.toString() ?: ""
-                        // val timestamp = snapshot.child("timestamp").value?.toString() ?: "" // Nếu cần dùng timestamp
+                        val rawTimestamp = snapshot.child("timestamp").value?.toString() ?: "0"
 
-                        Log.d("FIREBASE_DATA", "Type: $type")
-
-                        // 4. Cập nhật giao diện
-                        val isFall = type == "fall"
-                        
-                        // Cập nhật CardView status
-                        if (isFall) {
-                            binding.cardStatus.setCardBackgroundColor(android.graphics.Color.parseColor("#D32F2F"))
-                            binding.textView.text = "⚠️ PHÁT HIỆN NGÃ!"
-                            binding.tvStatusDesc.text = "Cần kiểm tra ngay"
-                        } else {
-                            binding.cardStatus.setCardBackgroundColor(android.graphics.Color.parseColor("#4CAF50"))
-                            binding.textView.text = "HỆ THỐNG AN TOÀN"
-                            binding.tvStatusDesc.text = "Không có sự cố"
+                        // 4. Xử lý thời gian (Lưu lại để check online/offline)
+                        lastEventTime = try {
+                            var t = rawTimestamp.toLong()
+                            if (rawTimestamp.length <= 10) t *= 1000 // Chuyển giây -> mili-giây
+                            t
+                        } catch (e: Exception) {
+                            System.currentTimeMillis()
                         }
 
-                        // 5. Xử lý ảnh (Decode Base64)
+                        Log.d("FIREBASE_DATA", "Type: $type, Time: $lastEventTime")
+
+                        // 5. Cập nhật giao diện ngay lập tức
+                        updateUI(type, lastEventTime)
+
+                        // 6. Hiển thị ảnh
                         if (imageUrl.isNotEmpty()) {
                             val bitmap = decodeBase64ToBitmap(imageUrl)
                             if (bitmap != null) {
                                 binding.imageView.setImageBitmap(bitmap)
-                            } else {
-                                // Nếu ảnh lỗi thì set ảnh mặc định (nếu có)
-                                // binding.imageView.setImageResource(R.drawable.ic_launcher_background)
+                                binding.imageView.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
                             }
                         }
 
-                        // 6. Hiện thông báo
-                        showNotification(type)
+                        // 7. Thông báo nếu có ngã
+                        if (type == "fall") {
+                            showNotification(type)
+                        }
 
                     } catch (e: Exception) {
-                        Log.e("HomeFragment", "Lỗi xử lý data: ${e.message}")
+                        Log.e("HomeFragment", "Error parsing data: ${e.message}")
                     }
                 }
 
@@ -136,10 +162,60 @@ class HomeFragment : Fragment() {
             })
     }
 
+    // Hàm kiểm tra và cập nhật trạng thái Online/Offline
+    private fun checkConnectionStatus() {
+        val currentTime = System.currentTimeMillis()
+        val diff = currentTime - lastEventTime
+        
+        // Nếu quá 60 giây không có dữ liệu mới -> Coi như Offline
+        val isOffline = diff > 60000
+        
+        if (isOffline && lastEventTime > 0) {
+            // Giao diện Offline (Màu xám)
+            binding.cardStatus.setCardBackgroundColor(Color.parseColor("#757575"))
+            binding.tvStatusTitle.text = "MẤT KẾT NỐI THIẾT BỊ"
+            binding.tvStatusSubtitle.text = "Kiểm tra nguồn điện hoặc Wifi"
+            binding.tvConnectionStatus.text = "Offline"
+            binding.iconStatus.clearAnimation() // Dừng nhấp nháy
+        } else if (lastEventTime > 0) {
+            // Nếu Online thì trạng thái được set trong updateUI
+            binding.tvConnectionStatus.text = "Online"
+        }
+    }
+
+    private fun updateUI(type: String, timestamp: Long) {
+        // Format giờ hiển thị (Ví dụ: 14:30:25)
+        val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        binding.tvLastUpdate.text = sdf.format(Date(timestamp))
+
+        if (type == "fall") {
+            // === TRẠNG THÁI NGUY HIỂM (ĐỎ) ===
+            binding.cardStatus.setCardBackgroundColor(Color.parseColor("#D32F2F")) // Đỏ
+            binding.tvStatusTitle.text = "CẢNH BÁO: CÓ NGƯỜI NGÃ!"
+            binding.tvStatusSubtitle.text = "Hệ thống phát hiện sự cố"
+            
+            // Hiệu ứng nhấp nháy cảnh báo
+            val anim = AlphaAnimation(1.0f, 0.4f)
+            anim.duration = 500
+            anim.repeatCount = Animation.INFINITE
+            anim.repeatMode = Animation.REVERSE
+            binding.iconStatus.startAnimation(anim)
+            
+        } else {
+            // === TRẠNG THÁI AN TOÀN (XANH) ===
+            binding.cardStatus.setCardBackgroundColor(Color.parseColor("#4CAF50")) // Xanh
+            binding.tvStatusTitle.text = "HỆ THỐNG AN TOÀN"
+            binding.tvStatusSubtitle.text = "Đang giám sát bình thường"
+            binding.iconStatus.clearAnimation()
+        }
+        
+        // Cập nhật trạng thái Online
+        binding.tvConnectionStatus.text = "Online"
+    }
+
     private fun decodeBase64ToBitmap(base64String: String?): Bitmap? {
         if (base64String.isNullOrEmpty()) return null
         return try {
-            // Thêm cờ NO_WRAP để tránh lỗi xuống dòng trong chuỗi Base64
             val bytes = Base64.decode(base64String, Base64.DEFAULT)
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
         } catch (e: Exception) {
