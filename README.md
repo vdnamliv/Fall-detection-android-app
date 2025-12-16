@@ -1,14 +1,41 @@
 # ProjectIot - Fall Detection Android App
 
 Ứng dụng Android IoT giám sát và cảnh báo ngã dành cho người cao tuổi.
+## Giao diện:
+#### 1️**Màn hình Notification**
+- **Format timestamp**: Hiển thị ngày giờ dễ đọc (VD: `14:30 - 25/12/2025`) 
+- **Phân loại màu sắc**:
+  - 🔴 Màu đỏ + chữ in đậm cho cảnh báo NGÃ
+  - 🟢 Màu xanh lá cho trạng thái bình thường
+- **Thumbnail ảnh**: Hiển thị ảnh thumbnail Base64 bên cạnh mỗi thông báo
+- **CardView design**: Layout đẹp hơn với bo góc và shadow
+
+#### 2️⃣ **Màn hình Home - Dashboard chuyên nghiệp**
+- **CardView trạng thái hệ thống**:
+  - 🟢 Màu xanh: "HỆ THỐNG AN TOÀN" khi bình thường
+  - 🔴 Màu đỏ: "⚠️ PHÁT HIỆN NGÃ!" khi có sự cố
+- **Hiển thị ảnh camera**: Ảnh từ IoT được hiển thị to và rõ ràng
+- **Nút SOS Khẩn cấp**: FAB màu đỏ to, dễ nhấn để gọi điện ngay lập tức
+
+#### 3️⃣ **Màn hình Settings - Cấu hình linh hoạt**
+- **Đổi số điện thoại khẩn cấp**: Lưu vào SharedPreferences, không cần hardcode
+- **Thông tin người được giám sát**: Tên và địa chỉ
+- **SeekBar độ nhạy cảm biến**: Điều chỉnh ngưỡng 0-100%
+- **Nút Test System**: Gửi thông báo test để kiểm tra hệ thống
+
+#### 4️⃣ **Cải tiến kỹ thuật**
+- Số điện thoại khẩn cấp được đọc từ SharedPreferences (không hardcode)
+- Xử lý timestamp linh hoạt (cả giây và milliseconds)
+- Decode Base64 image an toàn với try-catch
 
 ## Chức năng chính
 - Đăng nhập/Đăng ký với Firebase Authentication
 - Giám sát real-time phát hiện người ngã
 - Hiển thị hình ảnh từ camera IoT
-- Thông báo push khi phát hiện ngã
-- Button gọi điện khẩn cấp
-- Lịch sử các sự kiện
+- Thông báo push khi phát hiện ngã (với màu sắc phân biệt)
+- Button gọi điện khẩn cấp (có thể tùy chỉnh số)
+- Lịch sử các sự kiện (với thumbnail và timestamp đẹp)
+- Cài đặt linh hoạt (số điện thoại, độ nhạy, thông tin người dùng)
 
 ## Yêu cầu
 - Android Studio Hedgehog hoặc mới hơn
